@@ -2207,7 +2207,16 @@ mod test {
     #[ignore]
     #[test]
     // Test the case where the `Undelegate` extra-agenda transaction is invalid because the delegator is not a member.
+    /// This test case is ignored because the extra-agenda transaction is not implemented yet.
+    /// TODO: enable this test case when the extra-agenda transaction is implemented.
     fn invalid_undelegate_transaction_with_invalid_delegator1() {
+        todo!("Implement this test")
+    }
+
+    #[ignore]
+    #[test]
+    // Test the case where the `Undelegate` extra-agenda transaction is invalid because the delegator has not delegated.
+    fn invalid_undelegate_transaction_with_invalid_delegator2() {
         let (validator_keypair, reserved_state, mut csv) = setup_test(4);
         // Apply agenda commit
         let agenda_transactions_hash = calculate_agenda_transactions_hash(csv.phase.clone());
@@ -2246,21 +2255,11 @@ mod test {
             proof,
         ))
         .unwrap();
-        // Apply `Undelegate` extra-agenda transaction commit with the delegator is not a member.
-        // delegator: not-a-member
-        let (delegator_public_key, delegator_private_key) = generate_keypair_random();
-        let delegator = Member {
-            public_key: delegator_public_key,
-            name: "not-a-member".to_string(),
-            governance_voting_power: 100,
-            consensus_voting_power: 100,
-            governance_delegatee: None,
-            consensus_delegatee: None,
-            expelled: false,
-        };
+        // Apply `Undelegate` extra-agenda transaction commit with the delegator has not a delegated.
+        let invalid_delegator = reserved_state.members[3].clone();
         let undelegation_transaction_data: UndelegationTransactionData =
             UndelegationTransactionData {
-                delegator: delegator.name,
+                delegator: invalid_delegator.name,
                 block_height: csv.header.height + 1,
                 timestamp: 2,
                 chain_name: reserved_state.genesis_info.chain_name,
@@ -2272,15 +2271,6 @@ mod test {
             proof,
         ))
         .unwrap_err();
-    }
-
-    #[ignore]
-    #[test]
-    // Test the case where the `Undelegate` extra-agenda transaction is invalid because the delegator has not delegated.
-    /// This test case is ignored because the extra-agenda transaction is not implemented yet.
-    /// TODO: enable this test case when the extra-agenda transaction is implemented.
-    fn invalid_undelegate_transaction_with_invalid_delegator2() {
-        todo!("Implement this test")
     }
 
     #[ignore]
